@@ -1,8 +1,8 @@
 # AWS Key Pair
 
 resource "aws_key_pair" "terra_automate_key" {
-    key_name = "terra__automate_key"
-    public_key = file("terra-practice-key.pub")
+    key_name = var.key_pair
+    public_key = file("terra-practice-key.pubssh")
     
     tags = {
         Name = "terra_automate_key"
@@ -15,7 +15,7 @@ resource "aws_default_vpc" "default" {
 }
 
 resource "aws_security_group" "my_terra_sg" {
-    name = "terra_automate_sg"
+    name = var.security_group
     description = "Allow TLS inbound traffic and all outbound traffic"
     vpc_id = aws_default_vpc.default.id
 
@@ -60,16 +60,14 @@ resource "aws_security_group" "my_terra_sg" {
 
 resource "aws_instance" "terra-automate-instance" {
     # count = 2
-    for_each = tomap ({
-        terra-automate-micro = "t3.micro"
-        terra-automate-small = "t3.small"
-    })
-    ami = "ami-0ec10929233384c7f"
+    for_each = var.instance_type
+    ami = var.ami_id
     instance_type = each.value
     key_name = aws_key_pair.terra_automate_key.key_name
     security_groups = [aws_security_group.my_terra_sg.name]
+
     root_block_device {
-      volume_size = 8
+      volume_size = var.root_storage_block
       volume_type = "gp3"
     }
 
