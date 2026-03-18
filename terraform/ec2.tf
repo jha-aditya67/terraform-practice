@@ -59,8 +59,13 @@ resource "aws_security_group" "my_terra_sg" {
 # EC2 instance
 
 resource "aws_instance" "terra-automate-instance" {
+    # count = 2
+    for_each = tomap ({
+        terra-automate-micro = "t3.micro"
+        terra-automate-small = "t3.small"
+    })
     ami = "ami-0ec10929233384c7f"
-    instance_type = "t3.micro"
+    instance_type = each.value
     key_name = aws_key_pair.terra_automate_key.key_name
     security_groups = [aws_security_group.my_terra_sg.name]
     root_block_device {
@@ -69,7 +74,7 @@ resource "aws_instance" "terra-automate-instance" {
     }
 
     tags = {
-        Name = "terra-automate-instance"
+        Name = each.key
     }
     
 }
