@@ -2,7 +2,7 @@
 
 resource "aws_key_pair" "terra_automate_key" {
     key_name = var.key_pair
-    public_key = file("terra-practice-key.pubssh")
+    public_key = file("terra-practice-key.pub")
     
     tags = {
         Name = "terra_automate_key"
